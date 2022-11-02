@@ -17,11 +17,10 @@ contract Vault {
     uint256 immutable totalSupply;
     uint256 immutable usdcAmount;
 
-    constructor(address _USDC, address _CamHack, uint256 _remainingToken, uint256 _usdcAmount) {
+    constructor(address _USDC, address _CamHack, uint256 _totalSupplyCamHack, uint256 _usdcAmount) {
       USDC = _USDC;
       CamHack = _CamHack;
-      remainingToken = _remainingToken;
-      totalSupply = _remainingToken;
+      totalSupply = _totalSupplyCamHack;
       owner = msg.sender;
       usdcAmount = _usdcAmount;
       deployedAt = block.timestamp;
@@ -49,19 +48,13 @@ contract Vault {
       uint256 circulatingSupply = totalSupply - ERC20(CamHack).balanceOf(owner);
       uint256 usdcFraction = camHackBalance / circulatingSupply;
 
-      if (usdcFraction <= remainingToken) {
-        winners[winnersIndex++] = claimer;
+      winners[winnersIndex++] = claimer;
 
-        remainingToken -= usdcFraction;
+      uint256 usdcWinnings = usdcFraction * usdcAmount;
 
-        uint256 usdcWinnings = usdcFraction * usdcAmount;
-
-        // TODO add try catch
-        ERC20(USDC).transfer(claimer, usdcWinnings);
-        return usdcFraction;
-      }
-
-      return 0;
+      // TODO add try catch
+      ERC20(USDC).transfer(claimer, usdcWinnings);
+      return usdcFraction;
     }
 
     function giveMoneyBack() external {
