@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.14;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
@@ -5,54 +6,63 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 contract Vault {
     address[] public winners;
     uint256 winnersIndex = 0;
-    mapping (address => string) public winnerNames;
-    mapping (address => uint256) public winnerClaimed;
-    uint256 remainingToken;
+    mapping (address => string) public kycNames;
+    mapping (address => uint256) public kyced;
+    uint256 public remainingToken;
 
     address immutable owner;
     address immutable USDC;
     address immutable CamHack;
+    uint256 immutable public deployedAt;
+    uint256 immutable totalSupply;
 
     constructor(address _USDC, address _CamHack, uint256 _remainingToken) {
       USDC = _USDC;
       CamHack = _CamHack;
       remainingToken = _remainingToken;
+      totalSupply = _remainingToken;
       owner = msg.sender;
+      deployedAt = block.timestamp;
     }
 
-    // Call with the moniker that you want to associate with your address
-    // to collect your hard earned USDC
-    // name will be used for the leaderboard
-    function claim(string calldata name) external returns (uint256) {
+    // Call with the address and the name of the person registerting
+    function kyc(address newperson, string calldata name) external {
+      require(msg.sender == owner, "KYC can only be done by Swapnil");
+      kyced[newperson] = 1;
+      kycNames[newperson] = name;
+    }
+
+    function claim() external returns (uint256) {
+      uint256 currentTime = block.timestamp;
+      if (deployedAt + 86400 > currentTime) {
+        revert("Can't claim until 24 hours of deploy time");
+      }
+
       address claimer = msg.sender;
 
+      require(kyced[claimer] == 1, "can't claim if not kyced");
+
       uint256 camHackBalance = ERC20(CamHack).balanceOf(claimer);
-      uint256 alreadyClaimed = winnerClaimed[claimer];
 
-      uint256 winnings = camHackBalance - alreadyClaimed;
+      uint256 circulatingSupply = totalSupply - ERC20(CamHack).balanceOf(owner);
+      uint256 fractionalWinnings = camHackBalance / circulatingSupply;
 
-      if (winnings < remainingToken) {
+      if (fractionalWinnings <= remainingToken) {
+        winners[winnersIndex++] = claimer;
 
-        string memory winnerName = winnerNames[claimer];
-
-        if (sha256(abi.encodePacked(winnerName)) == sha256("")) {
-          winnerNames[claimer] = name;
-          winners[winnersIndex++] = claimer;
-        }
-
-        winnerClaimed[claimer] += winnings;
-        remainingToken -= winnings;
+        remainingToken -= fractionalWinnings;
 
         // TODO add try catch
-        ERC20(USDC).transferFrom(owner, claimer, camHackBalance);
-        return camHackBalance;
+        ERC20(USDC).transfer(claimer, fractionalWinnings);
+        return fractionalWinnings;
       }
 
       return 0;
     }
 
-    function topUp(uint256 amount) external {
-      require(msg.sender == owner, "Yo what?");
-      remainingToken += amount;
+    function giveMoneyBack() external {
+      require(msg.sender == owner, "only swapnil gets the money");
+      uint256 myBalance = ERC20(USDC).balanceOf(address(this));
+      ERC20(USDC).transfer(msg.sender, myBalance);
     }
 }

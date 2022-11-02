@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: MIT
-// Stolen from https://ethernaut.openzeppelin.com/level/0xae9677ff69efB3C1B9559C8F2A9ED6a2212148e3
 pragma solidity ^0.8.14;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
@@ -25,7 +24,7 @@ contract CoinFlip {
     uint256 wins = consecutiveWins[claimer];
 
     if (wins > 10 && claimed[claimer] == 0) {
-      ERC20(CamHack).transferFrom(owner, claimer, 20);
+      ERC20(CamHack).transferFrom(owner, claimer, 2);
       claimed[claimer] = 1;
     }
   }

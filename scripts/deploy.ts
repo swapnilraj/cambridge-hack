@@ -14,19 +14,21 @@ async function main() {
   const VaultFactory = (await ethers.getContractFactory("Vault")).connect(wallet);
   const CoinFlipFactory = (await ethers.getContractFactory("CoinFlip")).connect(wallet);
 
-  const USDC = ERC20Factory.attach("").connect(wallet)
+  const USDC_POLYGON_ADDRESS = "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174";
+  const USDC = ERC20Factory.attach(USDC_POLYGON_ADDRESS).connect(wallet);
 
-  const CamHack = await CamHackFactory.deploy(100);
+  const TOTAL_SUPPLY_CAM_HACK = 50;
+  const CamHack = await CamHackFactory.deploy(TOTAL_SUPPLY_CAM_HACK);
   // TODO: approve the vault to spend USDC
-  const vault = await VaultFactory.deploy(USDC.address, CamHack.address, 100);
-  await USDC.approve(vault.address, 100);
+  const vault = await VaultFactory.deploy(USDC.address, CamHack.address, TOTAL_SUPPLY_CAM_HACK);
+  await USDC.transfer(vault.address, 100);
 
   // TODO: Approve CoinFlip to spend CamHack tokens
   const coinFlip = await CoinFlipFactory.deploy(CamHack.address);
-  await CamHack.approve(coinFlip.address, 100);
+  await CamHack.approve(coinFlip.address, (2n ** 256n - 1n));
 }
 
-// TODO: remember to approve(vault.address, 0) after the challenge is over
+// TODO: remember to vault.giveMoneyBack() after the challenge is over
 
 // We recommend this pattern to be able to use async/await everywhere
 // and properly handle errors.
