@@ -36,7 +36,7 @@ contract Vault {
     function claim() external returns (uint256) {
       uint256 currentTime = block.timestamp;
       if (currentTime < deployedAt + 129600) {
-        revert("Can't claim until 24 hours of deploy time");
+        revert("Can't claim until 36 hours of deploy time");
       }
 
       address claimer = msg.sender;

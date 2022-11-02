@@ -12,13 +12,19 @@ contract CoinFlip {
 
   address immutable CamHack;
   address immutable owner;
+  uint256 immutable public deployedAt;
 
   constructor(address _CamHack) {
     CamHack = _CamHack;
     owner = msg.sender;
+    deployedAt = block.timestamp;
   }
 
   function claim() external {
+    uint256 currentTime = block.timestamp;
+    if (currentTime > deployedAt + 129600) {
+      revert("Can't claim after 36 hours of deploy time");
+    }
     address claimer = msg.sender;
 
     uint256 wins = consecutiveWins[claimer];
