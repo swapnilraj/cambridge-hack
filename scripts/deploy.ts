@@ -18,14 +18,12 @@ async function main() {
 
   const CamHack = await CamHackFactory.deploy(100);
   // TODO: approve the vault to spend USDC
-  const vault = await VaultFactory.deploy(CamHack.address, CamHack.address, 100);
+  const vault = await VaultFactory.deploy(USDC.address, CamHack.address, 100);
   await USDC.approve(vault.address, 100);
 
   // TODO: Approve CoinFlip to spend CamHack tokens
   const coinFlip = await CoinFlipFactory.deploy(CamHack.address);
   await CamHack.approve(coinFlip.address, 100);
-
-
 }
 
 // TODO: remember to approve(vault.address, 0) after the challenge is over
