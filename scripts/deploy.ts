@@ -18,10 +18,11 @@ async function main() {
   const USDC = ERC20Factory.attach(USDC_POLYGON_ADDRESS).connect(wallet);
 
   const TOTAL_SUPPLY_CAM_HACK = 50;
+  const TOTAL_USDC = 100;
   const CamHack = await CamHackFactory.deploy(TOTAL_SUPPLY_CAM_HACK);
   // TODO: approve the vault to spend USDC
-  const vault = await VaultFactory.deploy(USDC.address, CamHack.address, TOTAL_SUPPLY_CAM_HACK);
-  await USDC.transfer(vault.address, 100);
+  const vault = await VaultFactory.deploy(USDC.address, CamHack.address, TOTAL_SUPPLY_CAM_HACK, TOTAL_USDC);
+  await USDC.transfer(vault.address, TOTAL_USDC);
 
   // TODO: Approve CoinFlip to spend CamHack tokens
   const coinFlip = await CoinFlipFactory.deploy(CamHack.address);

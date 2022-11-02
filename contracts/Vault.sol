@@ -15,13 +15,15 @@ contract Vault {
     address immutable CamHack;
     uint256 immutable public deployedAt;
     uint256 immutable totalSupply;
+    uint256 immutable usdcAmount;
 
-    constructor(address _USDC, address _CamHack, uint256 _remainingToken) {
+    constructor(address _USDC, address _CamHack, uint256 _remainingToken, uint256 _usdcAmount) {
       USDC = _USDC;
       CamHack = _CamHack;
       remainingToken = _remainingToken;
       totalSupply = _remainingToken;
       owner = msg.sender;
+      usdcAmount = _usdcAmount;
       deployedAt = block.timestamp;
     }
 
@@ -34,7 +36,7 @@ contract Vault {
 
     function claim() external returns (uint256) {
       uint256 currentTime = block.timestamp;
-      if (deployedAt + 86400 > currentTime) {
+      if (currentTime < deployedAt + 129600) {
         revert("Can't claim until 24 hours of deploy time");
       }
 
@@ -45,16 +47,18 @@ contract Vault {
       uint256 camHackBalance = ERC20(CamHack).balanceOf(claimer);
 
       uint256 circulatingSupply = totalSupply - ERC20(CamHack).balanceOf(owner);
-      uint256 fractionalWinnings = camHackBalance / circulatingSupply;
+      uint256 usdcFraction = camHackBalance / circulatingSupply;
 
-      if (fractionalWinnings <= remainingToken) {
+      if (usdcFraction <= remainingToken) {
         winners[winnersIndex++] = claimer;
 
-        remainingToken -= fractionalWinnings;
+        remainingToken -= usdcFraction;
+
+        uint256 usdcWinnings = usdcFraction * usdcAmount;
 
         // TODO add try catch
-        ERC20(USDC).transfer(claimer, fractionalWinnings);
-        return fractionalWinnings;
+        ERC20(USDC).transfer(claimer, usdcWinnings);
+        return usdcFraction;
       }
 
       return 0;
