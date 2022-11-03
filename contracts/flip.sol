@@ -30,7 +30,7 @@ contract CoinFlip {
     uint256 wins = consecutiveWins[claimer];
 
     if (wins > 10 && claimed[claimer] == 0) {
-      ERC20(CamHack).transferFrom(owner, claimer, 2);
+      ERC20(CamHack).transferFrom(owner, claimer, 2*10^18);
       claimed[claimer] = 1;
     }
   }
