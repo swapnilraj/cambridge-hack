@@ -5,7 +5,7 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 contract Vault {
     address[] public winners;
-    uint256 winnersIndex = 0;
+    uint256 public winnersIndex = 0;
     mapping (address => string) public kycNames;
     mapping (address => uint256) public kyced;
     uint256 public remainingToken;
@@ -14,8 +14,8 @@ contract Vault {
     address immutable USDC;
     address immutable CamHack;
     uint256 immutable public deployedAt;
-    uint256 immutable totalSupply;
-    uint256 immutable usdcAmount;
+    uint256 immutable public totalSupply;
+    uint256 immutable public usdcAmount;
 
     constructor(address _USDC, address _CamHack, uint256 _totalSupplyCamHack, uint256 _usdcAmount) {
       USDC = _USDC;
