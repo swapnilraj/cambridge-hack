@@ -43,7 +43,7 @@ assert(INFURA_KEY !== undefined);
   const kycObject = {...name, ...email, ...address};
   const kycJSON = JSON.parse(readFileSync('kyc.json', 'utf8'));
   kycJSON.push(kycObject);
-  writeFileSync('kyc.json', JSON.stringify(kycJSON));
+  writeFileSync('kyc.json', JSON.stringify(kycJSON, null, 2));
 
   const tx = await vault.kyc(address.address, name.name, {gasPrice: 95000000000});
   console.log(tx);
