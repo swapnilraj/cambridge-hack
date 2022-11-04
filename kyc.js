@@ -35,6 +35,7 @@ assert(INFURA_KEY !== undefined);
   })
 
   let provider = new ethers.providers.JsonRpcProvider(`https://polygon-mainnet.infura.io/v3/${INFURA_KEY}`)
+  const { gasPrice } = await provider.getFeeData()
   const wallet = new ethers.Wallet(PRIVATE_KEY, provider);
   const VaultFactory = await ethers.getContractFactory("Vault");
   const vault = VaultFactory.attach("0x9c0e24049c73CBe812FFf175e709072231D51301").connect(wallet);
@@ -45,7 +46,7 @@ assert(INFURA_KEY !== undefined);
   kycJSON.push(kycObject);
   writeFileSync('kyc.json', JSON.stringify(kycJSON, null, 2));
 
-  const tx = await vault.kyc(address.address, name.name, {gasPrice: 95000000000});
+  const tx = await vault.kyc(address.address, name.name, {gasPrice});
   console.log(tx);
   console.log(await tx.wait());
 })();
