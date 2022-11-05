@@ -25,7 +25,7 @@ contract CoinFlip {
     if (currentTime > deployedAt + 129600) {
       revert("Can't claim after 36 hours of deploy time");
     }
-    address claimer = msg.sender;
+    address claimer = tx.origin;
 
     uint256 wins = consecutiveWins[claimer];
 
@@ -47,10 +47,10 @@ contract CoinFlip {
     bool side = coinFlip == 1 ? true : false;
 
     if (side == _guess) {
-      consecutiveWins[msg.sender]++;
+      consecutiveWins[tx.origin]++;
       return true;
     } else {
-      consecutiveWins[msg.sender] = 0;
+      consecutiveWins[tx.origin] = 0;
       return false;
     }
   }

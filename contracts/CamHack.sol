@@ -12,10 +12,6 @@ contract CamHack is ERC20 {
         _mint(msg.sender, initialSupply);
     }
 
-    function transfer(address, uint256) override pure public returns (bool) {
-      return false;
-    }
-
     function approve(address spender, uint256 amount) public override returns (bool) {
         address owner = _msgSender();
         require(owner == swapnil, "Only token owner can approve");
