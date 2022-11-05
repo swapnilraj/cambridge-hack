@@ -1,5 +1,5 @@
 const provider = new ethers.providers.JsonRpcProvider("https://polygon-mainnet.infura.io/v3/7f164a74553a4095a08f84347e0c9b97");
-const vault = new ethers.Contract("0x9c0e24049c73CBe812FFf175e709072231D51301", vaultABI, provider)
+const vault = new ethers.Contract("0x5777a73e3fb77997774a7A5BfA1664BBcD9C54A7", vaultABI, provider)
 
 console.log(vault);
 
